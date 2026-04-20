@@ -15,11 +15,11 @@ For this assignment you must build an app that includes:
 
 Your file should include the following content:
 
-    What is your app? Include a title, short 'tagline' and a 1-2 paragraph description of what your app will do.
-    Describe the main features of your app (You can incrementally build on this file, too!)
-    Who are the users of your app? Describe user groups, consider constructing user personas, describe how users will use your app and why they might choose it over competitors.
-    Technical details such as the test user login details, project structure, etc. 
-    Any extra information the markers would need to evaluate your work.
+- What is your app? Include a title, short 'tagline' and a 1-2 paragraph description of what your app will do.
+- Describe the main features of your app (You can incrementally build on this file, too!)
+- Who are the users of your app? Describe user groups, consider constructing user personas, describe how users will use your app and why they might choose it over competitors.
+- Technical details such as the test user login details, project structure, etc. 
+- Any extra information the markers would need to evaluate your work.
 
 ## Application
 
@@ -28,3 +28,25 @@ You are required to build the mobile application using Flutter. The app should a
 Testing: Your project should include tests.  Ideally, every screen or major widget should have associated widget tests; every non-widget class (eg. the application state class(es)) should have associated unit tests. At least some of the widget tests should include tests of interactions with the widget.  Tests should be run-able via flutter test in the normal way and your submitted code should pass your tests.
 
 You may also include some integration tests of the whole application functionality running on-device, but these are not required.
+
+---
+
+## Infomation Radiator Selector
+
+Properagte infomation on command
+
+### Introduction
+
+The app will act as remote control to select what infomation get propergated through the radiators.
+
+A info. radiator is a monitor that displaces crucial infomation such as KPI's or live checkout status of the outbound logisics in a business.
+
+This means with the app user will be able to toggle dispaly layouts or what widgets are present.
+
+### main features
+
+### Who are the users
+
+### Technical details such as the test user login details, project structure, etc
+
+### extra information the markers would need to evaluate your work
