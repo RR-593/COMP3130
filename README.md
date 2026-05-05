@@ -45,8 +45,15 @@ This means with the app user will be able to toggle dispaly layouts or what widg
 
 ### main features
 
+- Displays KPs from a persistant datatable
+
 ### Who are the users
 
+- Managamaent
+- Warehouse workers
+
 ### Technical details such as the test user login details, project structure, etc
+
+
 
 ### extra information the markers would need to evaluate your work

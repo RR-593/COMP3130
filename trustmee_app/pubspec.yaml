@@ -1,0 +1,29 @@
+name: trustmee_app
+description: TrustMee — personal location tracker. Flutter template scaffolded from Pencil wireframes.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  # TODO: add when wiring real features
+  # google_maps_flutter: ^2.9.0   # for the Map screen
+  # geolocator: ^13.0.1            # live location
+  # shared_preferences: ^2.3.0     # settings persistence
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+  # TODO: drop branding/logo PNGs into assets/images/ and reference them in
+  # the screens where you see `// TODO: add image asset` comments.
