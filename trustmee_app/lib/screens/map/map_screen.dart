@@ -106,7 +106,9 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
               TileLayer(
                 urlTemplate:
                     'https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key={api_key}',
-                additionalOptions: {'api_key': dotenv.env['MAPTILER_API_KEY'] ?? ''},
+                additionalOptions: {
+                  'api_key': dotenv.env['MAPTILER_API_KEY'] ?? ''
+                },
                 userAgentPackageName: 'com.trustmee.app',
               ),
               if (_deviceLocation != null)
@@ -114,20 +116,35 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
                   markers: [
                     Marker(
                       point: _deviceLocation!,
-                      width: 20,
-                      height: 20,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppTheme.accent,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppTheme.accent.withValues(alpha: 0.4),
-                              blurRadius: 8,
+                      width: 60,
+                      height: 60,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: AppTheme.accent.withValues(alpha: 0.15),
+                              shape: BoxShape.circle,
                             ),
-                          ],
-                        ),
+                          ),
+                          Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: AppTheme.accent,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.accent.withValues(alpha: 0.4),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

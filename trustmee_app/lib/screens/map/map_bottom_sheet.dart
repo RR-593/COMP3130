@@ -58,7 +58,7 @@ class _MapBottomSheetState extends State<MapBottomSheet> {
                 border: Border(
                   top: BorderSide(
                     color: Colors.white.withValues(alpha: 0.5),
-                    width: 0.5,
+                    width: 0.8,
                   ),
                 ),
               ),
@@ -85,7 +85,8 @@ class _MapBottomSheetState extends State<MapBottomSheet> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        MapSheetSummary(expanded: expanded, address: widget.address),
+                        MapSheetSummary(
+                            expanded: expanded, address: widget.address),
                         const SizedBox(height: 16),
                         if (expanded)
                           const Padding(
