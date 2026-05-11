@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:trustmee_app/screens/settings/settings_screen.dart';
 
 class MapSheetSummary extends StatelessWidget {
   final bool expanded;
@@ -56,7 +57,26 @@ class MapSheetSummary extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.settings_outlined, color: Colors.grey.shade600),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => const SettingsScreen(),
+                  transitionsBuilder: (_, animation, __, child) {
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(1.0, 0.0),
+                        end: Offset.zero,
+                      ).animate(CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeInOut,
+                      )),
+                      child: child,
+                    );
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),

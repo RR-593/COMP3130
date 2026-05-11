@@ -1,12 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:trustmee_app/theme/app_theme.dart';
-import 'package:trustmee_app/widgets/settings_row.dart';
+import 'package:trustmee_app/routes/app_routes.dart';
 import 'package:trustmee_app/screens/settings/account_settings_screen.dart';
-import 'package:trustmee_app/screens/settings/location_accuracy_screen.dart';
-import 'package:trustmee_app/screens/settings/update_frequency_screen.dart';
+import 'package:trustmee_app/screens/settings/clear_data_screen.dart';
 import 'package:trustmee_app/screens/settings/data_retention_screen.dart';
 import 'package:trustmee_app/screens/settings/export_history_screen.dart';
-import 'package:trustmee_app/screens/settings/clear_data_screen.dart';
+import 'package:trustmee_app/screens/settings/location_accuracy_screen.dart';
+import 'package:trustmee_app/screens/settings/update_frequency_screen.dart';
+import 'package:trustmee_app/theme/app_theme.dart';
+import 'package:trustmee_app/widgets/settings_row.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -25,6 +27,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => screen),
     );
+  }
+
+  Future<void> _logout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Log Out'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text(
+              'Log Out',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await FirebaseAuth.instance.signOut();
+      if (mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          AppRoutes.login,
+          (route) => false,
+        );
+      }
+    }
   }
 
   @override
@@ -66,19 +100,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: AppTheme.iosCardBackground,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 22,
                       backgroundColor: Color(0xFFD1D1D6),
                       // TODO: add asset
                       child: Icon(Icons.person, color: Colors.white, size: 28),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Alex Johnson',
                           style: TextStyle(
@@ -97,8 +131,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ],
                     ),
-                    const Spacer(),
-                    const Icon(
+                    Spacer(),
+                    Icon(
                       Icons.chevron_right,
                       color: AppTheme.iosSecondaryLabel,
                     ),
@@ -119,7 +153,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Background Tracking',
                 trailing: Switch(
                   value: _backgroundTracking,
-                  activeColor: AppTheme.iosGreen,
+                  activeThumbColor: AppTheme.iosGreen,
                   onChanged: (v) => setState(() => _backgroundTracking = v),
                 ),
               ),
@@ -138,7 +172,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Share Location',
                 trailing: Switch(
                   value: _shareLocation,
-                  activeColor: AppTheme.iosGreen,
+                  activeThumbColor: AppTheme.iosGreen,
                   onChanged: (v) => setState(() => _shareLocation = v),
                 ),
               ),
@@ -157,7 +191,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Location Reminders',
                 trailing: Switch(
                   value: _locationReminders,
-                  activeColor: AppTheme.iosGreen,
+                  activeThumbColor: AppTheme.iosGreen,
                   onChanged: (v) => setState(() => _locationReminders = v),
                 ),
               ),
@@ -165,7 +199,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 title: 'Weekly Summary',
                 trailing: Switch(
                   value: _weeklySummary,
-                  activeColor: AppTheme.iosGreen,
+                  activeThumbColor: AppTheme.iosGreen,
                   onChanged: (v) => setState(() => _weeklySummary = v),
                 ),
                 showDivider: false,
@@ -185,6 +219,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 isDestructive: true,
                 onTap: () => _push(const ClearDataScreen()),
                 showDivider: false,
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          SettingsSection(
+            title: '',
+            children: [
+              SettingsRow(
+                title: 'Log Out',
+                isDestructive: true,
+                showDivider: false,
+                onTap: _logout,
               ),
             ],
           ),
