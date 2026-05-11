@@ -5,6 +5,8 @@ import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
+import 'package:trustmee_app/models/state.dart';
 import 'package:trustmee_app/screens/map/map_bottom_sheet.dart';
 import 'package:trustmee_app/theme/app_theme.dart';
 
@@ -86,84 +88,91 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final double sheetHeight = MediaQuery.of(context).size.height * 0.22;
 
-    return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: Stack(
-        children: [
-          FlutterMap(
-            mapController: _mapController.mapController,
-            options: MapOptions(
-              initialCenter: const LatLng(-33.8688, 151.2093),
-              initialZoom: 19,
-              minZoom: 5,
-              maxZoom: 19,
-              interactionOptions: const InteractionOptions(
-                flags: InteractiveFlag.all,
-              ),
-              onMapEvent: _onMapEvent,
-            ),
+    return Consumer<StateModel>(
+      builder: (BuildContext context, StateModel value, Widget? child) {
+        return Scaffold(
+          backgroundColor: AppTheme.background,
+          body: Stack(
             children: [
-              TileLayer(
-                urlTemplate:
-                    'https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key={api_key}',
-                additionalOptions: {
-                  'api_key': dotenv.env['MAPTILER_API_KEY'] ?? ''
-                },
-                userAgentPackageName: 'com.trustmee.app',
-              ),
-              if (_deviceLocation != null)
-                MarkerLayer(
-                  markers: [
-                    Marker(
-                      point: _deviceLocation!,
-                      width: 60,
-                      height: 60,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: AppTheme.accent.withValues(alpha: 0.15),
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          Container(
-                            width: 20,
-                            height: 20,
-                            decoration: BoxDecoration(
-                              color: AppTheme.accent,
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 3),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.accent.withValues(alpha: 0.4),
-                                  blurRadius: 8,
+              FlutterMap(
+                mapController: _mapController.mapController,
+                options: MapOptions(
+                  initialCenter: const LatLng(-33.8688, 151.2093),
+                  initialZoom: 19,
+                  minZoom: 5,
+                  maxZoom: 19,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.all,
+                  ),
+                  onMapEvent: _onMapEvent,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key={api_key}',
+                    additionalOptions: {
+                      'api_key': dotenv.env['MAPTILER_API_KEY'] ?? ''
+                    },
+                    userAgentPackageName: 'com.trustmee.app',
+                  ),
+                  if (_deviceLocation != null)
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: _deviceLocation!,
+                          width: 60,
+                          height: 60,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color:
+                                      AppTheme.accent.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
                                 ),
-                              ],
-                            ),
+                              ),
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: AppTheme.accent,
+                                  shape: BoxShape.circle,
+                                  border:
+                                      Border.all(color: Colors.white, width: 3),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppTheme.accent
+                                          .withValues(alpha: 0.4),
+                                      blurRadius: 8,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                ],
+              ),
+              MapBottomSheet(address: _address),
+              if (_userPanned)
+                Positioned(
+                  bottom: sheetHeight + 16,
+                  right: 16,
+                  child: FloatingActionButton.small(
+                    onPressed: _recenter,
+                    backgroundColor: Colors.white,
+                    child: const Icon(Icons.my_location, color: Colors.black87),
+                  ),
                 ),
             ],
           ),
-          MapBottomSheet(address: _address),
-          if (_userPanned)
-            Positioned(
-              bottom: sheetHeight + 16,
-              right: 16,
-              child: FloatingActionButton.small(
-                onPressed: _recenter,
-                backgroundColor: Colors.white,
-                child: const Icon(Icons.my_location, color: Colors.black87),
-              ),
-            ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

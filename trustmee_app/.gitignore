@@ -16,6 +16,8 @@ migrate_working_dir/
 ## Firebase Secrets
 .firebase/
 lib/firebase_options.dart
+**/GoogleService-Info.plist
+**/google-services.json
 
 pubspec.lock
 
