@@ -16,6 +16,7 @@ dependencies:
   geolocator: ^13.0.1
   flutter_map_animations: ^0.7.0
   geocoding: ^3.0.0
+  flutter_dotenv: ^5.2.1
   # TODO: add when wiring real features
   # shared_preferences: ^2.3.0     # settings persistence
 
@@ -28,5 +29,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - .secrets/maptiler_api
   # TODO: drop branding/logo PNGs into assets/images/ and reference them in
   # the screens where you see `// TODO: add image asset` comments.

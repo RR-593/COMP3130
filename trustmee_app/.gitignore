@@ -11,6 +11,10 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+.secrets/
+
+pubspec.lock
+
 
 # IntelliJ related
 *.iml

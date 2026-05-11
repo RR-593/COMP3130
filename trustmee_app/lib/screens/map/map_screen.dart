@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
 import 'package:geocoding/geocoding.dart';
@@ -105,7 +106,7 @@ class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
               TileLayer(
                 urlTemplate:
                     'https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key={api_key}',
-                additionalOptions: const {'api_key': 'REDACTED'},
+                additionalOptions: {'api_key': dotenv.env['MAPTILER_API_KEY'] ?? ''},
                 userAgentPackageName: 'com.trustmee.app',
               ),
               if (_deviceLocation != null)
