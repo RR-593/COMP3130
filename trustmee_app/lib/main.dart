@@ -17,7 +17,7 @@ class TrustMeeApp extends StatelessWidget {
       // Login flow uses dark brand theme; settings flow uses iOS-light theme
       // per-screen via Theme widgets if needed. Default = dark brand.
       theme: AppTheme.darkBrand(),
-      initialRoute: AppRoutes.login,
+      initialRoute: AppRoutes.map,
       routes: AppRoutes.all(),
     );
   }

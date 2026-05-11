@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:trustmee_app/screens/map/map_bottom_sheet.dart';
 import 'package:trustmee_app/theme/app_theme.dart';
-import 'package:trustmee_app/screens/history/location_history_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -9,160 +14,136 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
-  final DraggableScrollableController _sheetController =
-      DraggableScrollableController();
-  double _sheetExtent = 0.22;
+class _MapScreenState extends State<MapScreen> with TickerProviderStateMixin {
+  late final AnimatedMapController _mapController = AnimatedMapController(
+    vsync: this,
+    duration: const Duration(milliseconds: 600),
+    curve: Curves.easeInOut,
+  );
+  LatLng? _deviceLocation;
+  String? _address;
+  bool _userPanned = false;
 
   @override
   void initState() {
     super.initState();
-    _sheetController.addListener(_onSheetChange);
-  }
-
-  void _onSheetChange() {
-    setState(() {
-      _sheetExtent = _sheetController.size;
-    });
+    _initLocation();
   }
 
   @override
   void dispose() {
-    _sheetController.removeListener(_onSheetChange);
-    _sheetController.dispose();
+    _mapController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initLocation() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return;
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return;
+    }
+    if (permission == LocationPermission.deniedForever) return;
+
+    final pos = await Geolocator.getCurrentPosition();
+    if (!mounted) return;
+
+    final location = LatLng(pos.latitude, pos.longitude);
+    final placemarks =
+        await placemarkFromCoordinates(pos.latitude, pos.longitude);
+    final p = placemarks.first;
+    final address = [p.street, p.locality].whereType<String>().join(', ');
+
+    if (!mounted) return;
+    setState(() {
+      _deviceLocation = location;
+      _address = address.isNotEmpty ? address : null;
+    });
+    _mapController.mapController.move(_deviceLocation!, 17);
+  }
+
+  void _onMapEvent(MapEvent event) {
+    if (event is MapEventMoveStart &&
+        event.source != MapEventSource.mapController) {
+      if (!_userPanned) setState(() => _userPanned = true);
+    }
+  }
+
+  void _recenter() {
+    if (_deviceLocation == null) return;
+    setState(() => _userPanned = false);
+    _mapController.animateTo(
+      dest: _deviceLocation!,
+      zoom: 17,
+      rotation: 0,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool expanded = _sheetExtent > 0.6;
+    final double sheetHeight = MediaQuery.of(context).size.height * 0.22;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
       body: Stack(
         children: [
-          // Bottom layer — map placeholder
-          // TODO: replace with google_maps_flutter GoogleMap widget
-          // TODO: add image asset here — see assets/images/ (map placeholder image)
-          Container(
-            color: const Color(0xFFDADADA),
-            child: const Center(
-              child: Icon(
-                Icons.location_on,
-                size: 48,
-                color: AppTheme.accent,
+          FlutterMap(
+            mapController: _mapController.mapController,
+            options: MapOptions(
+              initialCenter: const LatLng(-33.8688, 151.2093),
+              initialZoom: 19,
+              minZoom: 5,
+              maxZoom: 19,
+              interactionOptions: const InteractionOptions(
+                flags: InteractiveFlag.all,
               ),
+              onMapEvent: _onMapEvent,
             ),
-          ),
-          // SafeArea handles the status bar
-          const SafeArea(child: SizedBox.shrink()),
-          // Bottom-aligned draggable sheet
-          DraggableScrollableSheet(
-            controller: _sheetController,
-            initialChildSize: 0.22,
-            minChildSize: 0.22,
-            maxChildSize: 0.95,
-            builder: (context, scrollController) {
-              return Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.95),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(28),
-                    topRight: Radius.circular(28),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 16,
-                      offset: const Offset(0, -4),
-                    ),
-                  ],
-                ),
-                // When the sheet is dragged above 0.6 the LocationHistoryBody
-                // is shown beneath the summary, revealing the full history.
-                child: SingleChildScrollView(
-                  controller: scrollController,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 12),
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'MOST VISITED THIS WEEK',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.2,
-                                color: Colors.grey.shade600,
-                              ),
+            children: [
+              TileLayer(
+                urlTemplate:
+                    'https://api.maptiler.com/maps/streets-v4/{z}/{x}/{y}.png?key={api_key}',
+                additionalOptions: const {'api_key': 'REDACTED'},
+                userAgentPackageName: 'com.trustmee.app',
+              ),
+              if (_deviceLocation != null)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _deviceLocation!,
+                      width: 20,
+                      height: 20,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: AppTheme.accent,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 3),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.accent.withValues(alpha: 0.4),
+                              blurRadius: 8,
                             ),
-                            const SizedBox(height: 6),
-                            const Text(
-                              'Home',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '32h 15m spent here',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            if (!expanded)
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.keyboard_arrow_up,
-                                    size: 18,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Slide up for full history',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ],
-                              ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      // Reveal full history list once the sheet is expanded.
-                      if (expanded)
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 24),
-                          child: LocationHistoryBody(showDragHandle: false),
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              );
-            },
+            ],
           ),
+          MapBottomSheet(address: _address),
+          if (_userPanned)
+            Positioned(
+              bottom: sheetHeight + 16,
+              right: 16,
+              child: FloatingActionButton.small(
+                onPressed: _recenter,
+                backgroundColor: Colors.white,
+                child: const Icon(Icons.my_location, color: Colors.black87),
+              ),
+            ),
         ],
       ),
     );
