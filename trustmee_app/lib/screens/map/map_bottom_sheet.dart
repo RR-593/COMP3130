@@ -35,15 +35,18 @@ class _MapBottomSheetState extends State<MapBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final bool expanded = _extent > 0.6;
+    const double minHeight = 0.13;
+    const double maxHeight = 0.93;
+
+    final bool expanded = _extent > minHeight;
 
     return DraggableScrollableSheet(
       controller: _controller,
-      initialChildSize: 0.22,
-      minChildSize: 0.22,
-      maxChildSize: 0.93,
+      initialChildSize: minHeight,
+      minChildSize: minHeight,
+      maxChildSize: maxHeight,
       snap: true,
-      snapSizes: const [0.22, 0.93],
+      snapSizes: const [minHeight, maxHeight],
       builder: (context, scrollController) {
         return ClipRRect(
           borderRadius: const BorderRadius.only(
@@ -84,10 +87,10 @@ class _MapBottomSheetState extends State<MapBottomSheet> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 4),
                         MapSheetSummary(
                             expanded: expanded, address: widget.address),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 28),
                         if (expanded)
                           const Padding(
                             padding: EdgeInsets.only(bottom: 24),

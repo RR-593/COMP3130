@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:trustmee_app/routes/app_routes.dart';
 import 'package:trustmee_app/theme/app_theme.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   await dotenv.load(fileName: '.secrets/maptiler_api');
   runApp(const TrustMeeApp());
 }

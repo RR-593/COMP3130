@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:trustmee_app/graphs/simple_location_statistic.dart';
+import 'package:trustmee_app/widgets/graphs/simple_location_statistic.dart';
 
 class LocationEntry {
   final String name;
