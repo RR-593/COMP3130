@@ -23,6 +23,7 @@ dependencies:
   http: ^1.2.0
   google_fonts: ^6.0.0
   firebase_auth: ^5.7.0
+  flutter_inner_shadow: 0.0.1
   # shared_preferences: ^2.3.0     # settings persistence
 
 dev_dependencies:
