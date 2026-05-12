@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_inner_shadow/flutter_inner_shadow.dart';
 import 'package:trustmee_app/routes/app_routes.dart';
 import 'package:trustmee_app/theme/app_theme.dart';
+import 'package:trustmee_app/widgets/glass_container.dart';
 
 import 'widgets/login_email_field.dart';
 import 'widgets/login_header.dart';
@@ -24,8 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  final bool _isLoginView = true;
-  bool _loginSucceess = false;
   String? _errorMessage;
 
   @override
@@ -36,7 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
-    // Simple login handling
     final email = _emailController.text;
     final password = _passwordController.text;
 
@@ -44,7 +41,6 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await widget.auth
           .signInWithEmailAndPassword(email: email, password: password);
-      _loginSucceess = true;
       setState(() => _errorMessage = null);
     } on FirebaseAuthException catch (e) {
       setState(() => _errorMessage = _authErrorMessage(e.code));
@@ -69,8 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
+    return SizedBox.expand(
       child: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -80,120 +75,104 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         child: Scaffold(
           backgroundColor: Colors.transparent,
+          resizeToAvoidBottomInset: false,
           body: SafeArea(
-            bottom: false,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
+                const Expanded(child: SizedBox()),
                 const LoginHeader(),
-                // _______________
-                //Login Modal Box
-                //-----------------
-                Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Color.fromRGBO(12, 16, 67, 0.33),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(28),
-                      topRight: Radius.circular(28),
-                    ),
-                  ),
-                  padding: const EdgeInsets.fromLTRB(17, 20, 17, 20),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InnerShadow(
-                            shadows: [
-                              Shadow(
-                                  color: Colors.black.withOpacity(0.25),
-                                  blurRadius: 10,
-                                  offset: const Offset(2, 5))
-                            ],
-                            child:
-                                LoginEmailField(controller: _emailController)),
-                        const SizedBox(height: 20),
-                        InnerShadow(
-                          shadows: [
-                            Shadow(
-                                color: Colors.black.withOpacity(0.25),
-                                blurRadius: 10,
-                                offset: const Offset(2, 5))
-                          ],
-                          child: LoginPasswordField(
+                // Glass modal
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: GlassContainer(
+                    borderRadius: const BorderRadius.all(Radius.circular(22)),
+                    padding: const EdgeInsets.fromLTRB(17, 20, 17, 20),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          LoginEmailField(controller: _emailController),
+                          const SizedBox(height: 12),
+                          LoginPasswordField(
                             controller: _passwordController,
                             obscurePassword: _obscurePassword,
                             onToggleVisibility: () => setState(
                                 () => _obscurePassword = !_obscurePassword),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        if (_errorMessage != null)
+                          const SizedBox(height: 4),
                           Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  _errorMessage!,
-                                  style: const TextStyle(
-                                      color: Colors.redAccent, fontSize: 13),
-                                ),
-                                TextButton(
-                                  onPressed: () {},
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: AppTheme.accent,
-                                    padding: EdgeInsets.zero,
-                                    minimumSize: const Size(0, 0),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              if (_errorMessage != null)
+                                Expanded(
+                                  child: Text(
+                                    _errorMessage!,
+                                    style: const TextStyle(
+                                        color: Colors.redAccent, fontSize: 13),
                                   ),
-                                  child: const Text(
-                                    'Forgot Password?',
-                                    style: TextStyle(
-                                      color: AppTheme.accent,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                                )
+                              else
+                                const Expanded(child: SizedBox()),
+                              TextButton(
+                                onPressed: () {},
+                                style: TextButton.styleFrom(
+                                  foregroundColor: AppTheme.accent,
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: const Size(0, 0),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
-                              ]),
-                        const SizedBox(height: gap),
-                        LoginSignInButton(onPressed: _handleLogin),
-                        const SizedBox(height: gap),
-                        const Row(
-                          children: [
-                            Expanded(
-                              child: Divider(
-                                  color: AppTheme.surfaceAlt, thickness: 1),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                'or continue with',
-                                style: TextStyle(
-                                  color: AppTheme.textSecondary,
-                                  fontSize: 12,
+                                child: const Text(
+                                  'Forgot Password?',
+                                  style: TextStyle(
+                                    color: AppTheme.accent,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Expanded(
-                              child: Divider(
-                                  color: AppTheme.surfaceAlt, thickness: 1),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: gap),
-                        LoginSocialButtons(
-                          onGooglePressed: () {},
-                          onApplePressed: () {},
-                        ),
-                        const SizedBox(height: gap),
-                        LoginSignUpRow(
-                          onSignUpPressed: () =>
-                              Navigator.pushNamed(context, AppRoutes.register),
-                        ),
-                      ],
+                            ],
+                          ),
+                          const SizedBox(height: gap),
+                          LoginSignInButton(onPressed: _handleLogin),
+                          const SizedBox(height: gap),
+                          const Row(
+                            children: [
+                              Expanded(
+                                child: Divider(
+                                    color: AppTheme.surfaceAlt, thickness: 1),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                child: Text(
+                                  'or continue with',
+                                  style: TextStyle(
+                                    color: AppTheme.textSecondary,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Divider(
+                                    color: AppTheme.surfaceAlt, thickness: 1),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: gap),
+                          LoginSocialButtons(
+                            onGooglePressed: () {},
+                            onApplePressed: () {},
+                          ),
+                          const SizedBox(height: gap),
+                          LoginSignUpRow(
+                            onSignUpPressed: () => Navigator.pushNamed(
+                                context, AppRoutes.register),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
+                const Expanded(child: SizedBox()),
               ],
             ),
           ),

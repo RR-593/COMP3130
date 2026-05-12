@@ -31,7 +31,10 @@ class AppTheme {
       colorScheme: ColorScheme.fromSeed(
         seedColor: accent,
         brightness: Brightness.dark,
-      ).copyWith(surface: surface),
+      ).copyWith(
+        surface: surface,
+        onSurface: textPrimary,
+      ),
 
       // ── Text ──────────────────────────────────────────────────────────────────
       textTheme: const TextTheme(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:trustmee_app/theme/app_theme.dart';
+import 'package:trustmee_app/widgets/inner_shadow.dart';
 
 class LoginPasswordField extends StatelessWidget {
   const LoginPasswordField({
@@ -15,34 +16,42 @@ class LoginPasswordField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      obscureText: obscurePassword,
-      style: const TextStyle(color: AppTheme.textPrimary),
-      decoration: InputDecoration(
-        hintText: 'Password',
-        hintStyle: const TextStyle(color: AppTheme.textSecondary),
-        prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.accent),
-        suffixIcon: IconButton(
-          icon: Icon(
-            obscurePassword ? Icons.visibility_off : Icons.visibility,
-            color: AppTheme.textSecondary,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: InnerShadow(
+        blur: 6,
+        color: Colors.black.withValues(alpha: 0.25),
+        offset: const Offset(0, 4),
+        child: TextField(
+          controller: controller,
+          obscureText: obscurePassword,
+          style: const TextStyle(color: AppTheme.textPrimary),
+          decoration: InputDecoration(
+            hintText: 'Password',
+            hintStyle: const TextStyle(color: AppTheme.textSecondary),
+            prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.accent),
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscurePassword ? Icons.visibility_off : Icons.visibility,
+                color: AppTheme.textSecondary,
+              ),
+              onPressed: onToggleVisibility,
+            ),
+            filled: true,
+            fillColor: AppTheme.surfaceAlt,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+            ),
           ),
-          onPressed: onToggleVisibility,
-        ),
-        filled: true,
-        fillColor: AppTheme.surfaceAlt,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
         ),
       ),
     );

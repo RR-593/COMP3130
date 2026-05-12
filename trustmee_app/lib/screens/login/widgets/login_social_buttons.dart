@@ -37,7 +37,8 @@ class LoginSocialButtons extends StatelessWidget {
         Expanded(
           child: OutlinedButton.icon(
             onPressed: onApplePressed,
-            icon: const Icon(Icons.apple, color: AppTheme.textPrimary),
+            icon:
+                const Icon(Icons.apple, color: AppTheme.textPrimary, size: 28),
             label: const Text(
               'Apple',
               style: TextStyle(color: AppTheme.textPrimary),
